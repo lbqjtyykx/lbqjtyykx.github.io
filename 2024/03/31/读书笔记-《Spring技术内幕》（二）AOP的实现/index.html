@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>读书笔记-《Spring技术内幕》（二）AOP的实现 | 萝卜青今天也要开心，公众号同名，点个关注不迷路~</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="前面我们已经学习了 IoC（读书笔记-《Spring技术内幕》（一）IoC容器的实现），相比之下，Spring AOP 部分没有那么多的类层次设计，但是出现了许多相关的知识点，我们先复习一下，以便后文阅读流畅。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="读书笔记-《Spring技术内幕》（二）AOP的实现">
+<meta property="og:url" content="https://lbqjtyykx.github.io/2024/03/31/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-%E3%80%8ASpring%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95%E3%80%8B%EF%BC%88%E4%BA%8C%EF%BC%89AOP%E7%9A%84%E5%AE%9E%E7%8E%B0/index.html">
+<meta property="og:site_name" content="萝卜青今天也要开心，公众号同名，点个关注不迷路~">
+<meta property="og:description" content="前面我们已经学习了 IoC（读书笔记-《Spring技术内幕》（一）IoC容器的实现），相比之下，Spring AOP 部分没有那么多的类层次设计，但是出现了许多相关的知识点，我们先复习一下，以便后文阅读流畅。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://lbqjtyykx.github.io/picture/2024/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-%E3%80%8ASpring%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95%E3%80%8B%EF%BC%88%E4%BA%8C%EF%BC%89AOP%E7%9A%84%E5%AE%9E%E7%8E%B0/%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F%E7%B1%BB%E5%9B%BE-%E5%B8%A6%E6%B0%B4%E5%8D%B0.jpg">
+<meta property="og:image" content="https://lbqjtyykx.github.io/picture/2024/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-%E3%80%8ASpring%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95%E3%80%8B%EF%BC%88%E4%BA%8C%EF%BC%89AOP%E7%9A%84%E5%AE%9E%E7%8E%B0/AOP%E5%BC%95%E5%87%BA%E9%97%AE%E9%A2%98-%E5%B8%A6%E6%B0%B4%E5%8D%B0.jpg">
+<meta property="og:image" content="https://lbqjtyykx.github.io/picture/2024/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-%E3%80%8ASpring%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95%E3%80%8B%EF%BC%88%E4%BA%8C%EF%BC%89AOP%E7%9A%84%E5%AE%9E%E7%8E%B0/AOP%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84-%E5%B8%A6%E6%B0%B4%E5%8D%B0.jpg">
+<meta property="og:image" content="https://lbqjtyykx.github.io/picture/2024/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-%E3%80%8ASpring%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95%E3%80%8B%EF%BC%88%E4%BA%8C%EF%BC%89AOP%E7%9A%84%E5%AE%9E%E7%8E%B0/SpringAOP%E6%A0%B8%E5%BF%83%E7%B1%BB%E5%9B%BE-%E5%B8%A6%E6%B0%B4%E5%8D%B0.jpg">
+<meta property="og:image" content="https://lbqjtyykx.github.io/picture/2024/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-%E3%80%8ASpring%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95%E3%80%8B%EF%BC%88%E4%BA%8C%EF%BC%89AOP%E7%9A%84%E5%AE%9E%E7%8E%B0/%E9%85%8D%E5%9B%BE-%E5%B8%A6%E6%B0%B4%E5%8D%B0.jpg">
+<meta property="article:published_time" content="2024-03-31T04:36:49.000Z">
+<meta property="article:modified_time" content="2024-03-31T04:49:49.561Z">
+<meta property="article:author" content="萝卜青今天也要开心">
+<meta property="article:tag" content="读书笔记">
+<meta property="article:tag" content="学习">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="Spring">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://lbqjtyykx.github.io/picture/2024/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-%E3%80%8ASpring%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95%E3%80%8B%EF%BC%88%E4%BA%8C%EF%BC%89AOP%E7%9A%84%E5%AE%9E%E7%8E%B0/%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F%E7%B1%BB%E5%9B%BE-%E5%B8%A6%E6%B0%B4%E5%8D%B0.jpg">
+  
+    <link rel="alternate" href="/atom.xml" title="萝卜青今天也要开心，公众号同名，点个关注不迷路~" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/typeface-source-code-pro@0.0.71/index.min.css">
+
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">萝卜青今天也要开心，公众号同名，点个关注不迷路~</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS Feed"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="Search"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://lbqjtyykx.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-读书笔记-《Spring技术内幕》（二）AOP的实现" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2024/03/31/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-%E3%80%8ASpring%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95%E3%80%8B%EF%BC%88%E4%BA%8C%EF%BC%89AOP%E7%9A%84%E5%AE%9E%E7%8E%B0/" class="article-date">
+  <time class="dt-published" datetime="2024-03-31T04:36:49.000Z" itemprop="datePublished">2024-03-31</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      读书笔记-《Spring技术内幕》（二）AOP的实现
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>前面我们已经学习了 IoC（读书笔记-《Spring技术内幕》（一）IoC容器的实现），相比之下，Spring AOP 部分没有那么多的类层次设计，但是出现了许多相关的知识点，我们先复习一下，以便后文阅读流畅。</p>
+<span id="more"></span>
+
+<hr>
+<h3 id="一、知识点复习"><a href="#一、知识点复习" class="headerlink" title="一、知识点复习"></a>一、知识点复习</h3><h4 id="1-代理模式"><a href="#1-代理模式" class="headerlink" title="1.代理模式"></a>1.代理模式</h4><p><img src="/../picture/2024/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-%E3%80%8ASpring%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95%E3%80%8B%EF%BC%88%E4%BA%8C%EF%BC%89AOP%E7%9A%84%E5%AE%9E%E7%8E%B0/%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F%E7%B1%BB%E5%9B%BE-%E5%B8%A6%E6%B0%B4%E5%8D%B0.jpg" alt="代理模式类图"><br>上图为代理模式的类图。简单来说，其他对象无法直接访问 RealSubject，而是通过访问 Proxy 来间接访问 RealSubject。<br>基于代理类的创建方式和使用场景，又分为了静态代理模式和动态代理模式。前者是在<strong>编译时</strong>预先写好代理类的代码，而后者是在<strong>运行时</strong>动态生成的。</p>
+<h4 id="2-反射"><a href="#2-反射" class="headerlink" title="2.反射"></a>2.反射</h4><p>即程序可以访问、检测和修改它本身状态或行为的一种能力。<br>前面提到的动态代理模式，其代理类就可以通过反射来实现。</p>
+<h4 id="3-回调函数"><a href="#3-回调函数" class="headerlink" title="3.回调函数"></a>3.回调函数</h4><p>严格意义上讲，是把一个函数当作参数时，这个函数就是回调函数。也就是说这个函数应该是通过指针调用的。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">function callback() &#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line">function hello(func) &#123;</span><br><span class="line">    ... </span><br><span class="line">&#125;</span><br><span class="line">hello(callback);</span><br></pre></td></tr></table></figure>
+
+<p>不过实际情况中，大家会把使用到回调思想的异步处理函数也称为回调函数，不必过于纠结。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">// Team A</span><br><span class="line">function hello() &#123;</span><br><span class="line">    world()</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line">function callback() &#123;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// Team B</span><br><span class="line">function world() &#123;</span><br><span class="line">    ...</span><br><span class="line">    callback()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="二、引出问题"><a href="#二、引出问题" class="headerlink" title="二、引出问题"></a>二、引出问题</h3><p>在软件工程的发展中，开发者在不断优化开发流程、提高软件质量。</p>
+<p><strong>面向过程编程（POP）</strong>时，通过模块划分将函数进行封装，增加可维护性。<strong>面向对象编程（OOP）</strong>时，通过各种设计模式使得程序设计更加优雅。</p>
+<p>但有一类代码（例如统计接口的耗时、日志、操作记录等），不方便使用继承来进行管理，即使封装成公共函数，在每处都显示调用也会造成特别多的<strong>重复</strong>代码。针对这个问题，<strong>面向切面编程（AOP）</strong>的思想就出现了。<br><img src="/../picture/2024/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-%E3%80%8ASpring%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95%E3%80%8B%EF%BC%88%E4%BA%8C%EF%BC%89AOP%E7%9A%84%E5%AE%9E%E7%8E%B0/AOP%E5%BC%95%E5%87%BA%E9%97%AE%E9%A2%98-%E5%B8%A6%E6%B0%B4%E5%8D%B0.jpg" alt="AOP引出问题"><br>如图所示，我们需要找到一个办法，让这条横线的功能仅使用一处代码实现，这样不会造成重复代码，业务代码与非业务代码也不耦合，就很优雅了。</p>
+<p>答案之一便是前面复习的动态代理模式，当然，既然提出了 AOP，那大佬们必然也会给出更多的定义，就像 OOP 的封装、继承、多态一样。</p>
+<hr>
+<h3 id="三、关于AOP"><a href="#三、关于AOP" class="headerlink" title="三、关于AOP"></a>三、关于AOP</h3><p>我们结合上图，来看下 AOP 的相关定义。</p>
+<ul>
+<li><strong>切面（Aspect）：</strong>可以理解为上图中横向的绿色箭头。</li>
+<li><strong>连接点（Joinpoint）：</strong>被切面划开的点，例如上图业务代码的执行前和执行后。</li>
+<li><strong>通知（Advice）：</strong>在连接点执行的代码，例如上图的打印参数、记录耗时。</li>
+<li><strong>切点（Pointcut）：</strong>用于定义哪些连接点上应该通知，相当于是连接点的子集。</li>
+<li><strong>织入（Weaving）：</strong>指将切面应用到目标对象并创建新的代理对象的过程。</li>
+</ul>
+<p>下图为 AOP 联盟定义的 AOP 体系结构，从上至下是开发语言层面到底层实现。以 Spring AOP 为例，我们只需要学习语言和开发环境这个层面，使用Spring 定义好的注解，编写相关代码并做好配置，就可以实现我们上图右侧想要的效果。但更深入的话还可以了解它的配置模型，以及底层是基于什么实现的。<br><img src="/../picture/2024/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-%E3%80%8ASpring%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95%E3%80%8B%EF%BC%88%E4%BA%8C%EF%BC%89AOP%E7%9A%84%E5%AE%9E%E7%8E%B0/AOP%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84-%E5%B8%A6%E6%B0%B4%E5%8D%B0.jpg" alt="AOP体系结构"></p>
+<hr>
+<h3 id="四、Spring-AOP-设计与实现"><a href="#四、Spring-AOP-设计与实现" class="headerlink" title="四、Spring AOP 设计与实现"></a>四、Spring AOP 设计与实现</h3><h4 id="1-设计原理"><a href="#1-设计原理" class="headerlink" title="1.设计原理"></a>1.设计原理</h4><p>以 ProxyFactory 为设计中心，类图如下：<br><img src="/../picture/2024/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-%E3%80%8ASpring%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95%E3%80%8B%EF%BC%88%E4%BA%8C%EF%BC%89AOP%E7%9A%84%E5%AE%9E%E7%8E%B0/SpringAOP%E6%A0%B8%E5%BF%83%E7%B1%BB%E5%9B%BE-%E5%B8%A6%E6%B0%B4%E5%8D%B0.jpg" alt="SpringAOP核心类图"><br>简单概括一下：</p>
+<ul>
+<li>ProxyConfig：可看作一个数据基类，为子类提供<strong>配置</strong>属性。</li>
+<li>AdvisedSupport：封装 AOP 对<strong>通知和通知器</strong>的相关操作。</li>
+<li>ProxyCreatorSupport：创建 AOP 代理对象的一个<strong>辅助</strong>类。</li>
+<li>AspectJProxyFactory：对于使用 <strong>AspectJ</strong> 的 AOP 应用，起到集成 Spring 和 AspectJ 的作用，并生成 AOP 代理对象。</li>
+<li>ProxyFactoryBean：对于使用 Spring AOP 的应用，生成 AOP 代理对象。（可在 IoC 容器中完成<strong>声明式</strong>配置）</li>
+<li>ProxyFactory：对于使用 Spring AOP 的应用，生成 AOP 代理对象。（需要<strong>编程式</strong>使用）</li>
+</ul>
+<h4 id="2-以-ProxyFactoryBean-为例，代理对象的生成与使用"><a href="#2-以-ProxyFactoryBean-为例，代理对象的生成与使用" class="headerlink" title="2.以 ProxyFactoryBean 为例，代理对象的生成与使用"></a>2.以 ProxyFactoryBean 为例，代理对象的生成与使用</h4><p><strong>首先，</strong>ProxyFactoryBean 生成 AopProxy 过程如下：</p>
+<ul>
+<li>ProxyFactoryBean.initializeAdvisorChain()</li>
+<li>ProxyFactoryBean.getSingletonInstance()</li>
+<li>ProxyCreatorSupport.getPaoxy()</li>
+<li>DefaultAopProxyFactory.createAopProxy()</li>
+<li>JdkDynamicAopProxy() 或 CglibProxyFactory.createCglibProxy()</li>
+</ul>
+<p>在 DefaultAopProxyFactory.createAopProxy() 中，我们可以看到两种动态代理的区别之一，是 JDK 动态代理适用于实现了接口的类。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">if (targetClass.isInterface()) &#123;</span><br><span class="line">    return new JdkDynamicAopProxy(config);</span><br><span class="line">&#125;</span><br><span class="line">if (!cglibAvailable) &#123;</span><br><span class="line">    throw new AopConfigException(&quot;没找到CGLIGB配置&quot;)</span><br><span class="line">&#125;</span><br><span class="line">return CglibProxyFactory.createCglibProxy(config);</span><br></pre></td></tr></table></figure>
+
+<p>再往下走，就是 ：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">// 在 JdkDynamicAopProxy.getProxy() 中</span><br><span class="line">Proxy.newProxyInstance();</span><br><span class="line"></span><br><span class="line">// 在 Cglib2AopProxy.getProxy() 中</span><br><span class="line">proxy = enhancer.create();</span><br></pre></td></tr></table></figure>
+
+<p>两者主要区别在于，JDK 是通过<strong>反射</strong>实现，CGLIB 通过<strong>字节码</strong>实现，基于此，两者的使用条件、创建代理速度、运行时速度、应用场景自然就各有优劣了。</p>
+<p><strong>其次，</strong>在得到 AopProxy 对象后，当代理的接口方法被调用执行时， Proxy 机制就开始干活了。它会触发对这些方法的拦截。</p>
+<p>具体来说，这是一个遍历定义好的拦截器的过程，经过这些拦截，我们的对象就得到了增强。拦截器在前面代理对象生成时便已经缓存好了，以拦截器生成的视角来看，流程如下：</p>
+<ul>
+<li>ProxyFactoryBean.getObject() 对 advisor 进行初始化，从 XML 配置中获取 advisor 通知器。</li>
+<li>DefaultAdvisorChainFactory 直接从 config 中获取 advisor 链。</li>
+<li>DefaultAdvisorChainFactory 通过 AdvisorAdapterRegistry 注册拦截器链。</li>
+<li>AdvisedSupport 通过 DefaultAdvisorChainFactory 获取拦截器链并缓存到 List。</li>
+<li>ReflectiveMethodInvocation.proceed() 从 interceptorsAndDynamicMethodMatchers （即上面的 List） 中获得拦截器。</li>
+<li>基于JDK 动态代理中：JdkDynamicAopProxy.invoke() 调用 ReflectiveMethodInvocation.proceed() 。</li>
+<li>基于 CGLIB 动态代理中：DynamicAdvisedInterceptor.intercept() 调用 ReflectiveMethodInvocation.proceed() 。</li>
+</ul>
+<h4 id="3-ProxyFactory-生成-AopProxy"><a href="#3-ProxyFactory-生成-AopProxy" class="headerlink" title="3.ProxyFactory 生成 AopProxy"></a>3.ProxyFactory 生成 AopProxy</h4><p>也可以试试编程式使用，这样步骤看着更加清晰简单，说白了也就是把 advisor 和 advice 准备好，然后生成代理对象再使用的过程。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">TargetImpl target = new TargetImpl();</span><br><span class="line">ProxyFactory aopFactory = new ProxyFactory(target);</span><br><span class="line">aopFactory.addAdvisor(myAdvisor);</span><br><span class="line">aopFactory.addAdvice(myAdvice);</span><br><span class="line">TargetImpl targetProxy = (TargetImpl)aopFactory.getProxy();</span><br></pre></td></tr></table></figure>
+
+<p>至此，我们以 ProxyFactoryBean 和 ProxyFactory 为例学习了 Spring AOP 的实现。感兴趣的话还可以了解下 Spring AOP 的高级特性或是其他 AOP 解决方案如 AspectJ，不过考虑到实际业务需求以及学习成本，Spring AOP 基本功能是完全够用的。</p>
+<hr>
+<p><img src="/../picture/2024/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-%E3%80%8ASpring%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95%E3%80%8B%EF%BC%88%E4%BA%8C%EF%BC%89AOP%E7%9A%84%E5%AE%9E%E7%8E%B0/%E9%85%8D%E5%9B%BE-%E5%B8%A6%E6%B0%B4%E5%8D%B0.jpg" alt="配图"></p>
+<p><strong>原文链接：</strong><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=Mzk0NDY1MTIwMg==&mid=2247483752&idx=1&sn=ca92ada4252a8ed39fa86a43eb786d7a&chksm=c3202fc5f457a6d33e1b3832a1afdef42c760ff54af48d21b7206cc1c1766ade88c3a360a2a5#rd">读书笔记-《Spring技术内幕》（二）AOP的实现</a><br><strong>原创不易，点个关注不迷路哟，谢谢！</strong><br><strong>文章推荐：</strong><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=Mzk0NDY1MTIwMg==&mid=2247483693&idx=1&sn=c0ac6f3f08dcbebfbe6b2d947536b210&chksm=c3202f80f457a6967bf321538f291e3b897bb1ee02bbbfb397abc1b40abb3799071bc0dbe2c9#rd">如何提高核心竞争力</a>、<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=Mzk0NDY1MTIwMg==&mid=2247483698&idx=1&sn=353ca11aedd827b99af5913dc44af16f&chksm=c3202f9ff457a689753fdf9f341915fbcdf056ae86d1fcd3650e45558acdf8b78a8f5bf880cf#rd">读书笔记-《我的互联网方法论》</a>、<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=Mzk0NDY1MTIwMg==&mid=2247483683&idx=1&sn=90b4d400c4b57001da2ba78860115818&chksm=c3202f8ef457a6989d4799408959c26d3818122b68f97ae49e0c9640422734be4fa29bd1ed85#rd">读书笔记-《银行4.0》</a>、<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=Mzk0NDY1MTIwMg==&mid=2247483714&idx=1&sn=80427e3c6180e2f6807c7e73d2209e44&chksm=c3202feff457a6f9bd9a570ad364ca2e7e2926cd70ce6bb641d62ffae4efda5479e527a170da#rd">读书笔记-《Spring技术内幕》（一）IoC容器的实现</a>、<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=Mzk0NDY1MTIwMg==&mid=2247483723&idx=1&sn=6f88a4e7a7faa93809b34cd23d9553a2&chksm=c3202fe6f457a6f087f65fd01c4bea64c7a8dfe45b9b7ea5cb2e08a994a3d805104a87ae4e63#rd">读书笔记-《当下的力量》</a>、<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=Mzk0NDY1MTIwMg==&mid=2247483737&idx=1&sn=b74fa3f77bfba18c9e46228b57e3410c&chksm=c3202ff4f457a6e2b9de36104da5bbafc8d634eb5f64e0f086a3ddf1e3af19ce85fd7735a222#rd">读书笔记-《写给大家看的设计书》</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://lbqjtyykx.github.io/2024/03/31/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-%E3%80%8ASpring%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95%E3%80%8B%EF%BC%88%E4%BA%8C%EF%BC%89AOP%E7%9A%84%E5%AE%9E%E7%8E%B0/" data-id="cluf1lkwz0000ucrgf4rq14rx" data-title="读书笔记-《Spring技术内幕》（二）AOP的实现" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Spring/" rel="tag">Spring</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%AD%A6%E4%B9%A0/" rel="tag">学习</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2024/03/24/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-%E3%80%8A%E5%86%99%E7%BB%99%E5%A4%A7%E5%AE%B6%E7%9C%8B%E7%9A%84%E8%AE%BE%E8%AE%A1%E4%B9%A6%E3%80%8B/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">读书笔记-《写给大家看的设计书》</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BA%92%E8%81%94%E7%BD%91/" rel="tag">互联网</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE/" rel="tag">大数据</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%AD%A6%E4%B9%A0/" rel="tag">学习</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%80%9D%E7%BB%B4/" rel="tag">思维</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%96%B9%E6%B3%95%E8%AE%BA/" rel="tag">方法论</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B3%95%E6%B2%BB/" rel="tag">法治</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%BA%90%E7%A0%81/" rel="tag">源码</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AB%9E%E4%BA%89%E5%8A%9B/" rel="tag">竞争力</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AC%94%E8%AE%B0/" rel="tag">笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%BE%E8%AE%A1/" rel="tag">设计</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%93%B6%E8%A1%8C/" rel="tag">银行</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Java/" style="font-size: 12.5px;">Java</a> <a href="/tags/Spring/" style="font-size: 12.5px;">Spring</a> <a href="/tags/%E4%BA%92%E8%81%94%E7%BD%91/" style="font-size: 10px;">互联网</a> <a href="/tags/%E5%A4%A7%E6%95%B0%E6%8D%AE/" style="font-size: 10px;">大数据</a> <a href="/tags/%E5%AD%A6%E4%B9%A0/" style="font-size: 17.5px;">学习</a> <a href="/tags/%E6%80%9D%E7%BB%B4/" style="font-size: 15px;">思维</a> <a href="/tags/%E6%96%B9%E6%B3%95%E8%AE%BA/" style="font-size: 10px;">方法论</a> <a href="/tags/%E6%B3%95%E6%B2%BB/" style="font-size: 10px;">法治</a> <a href="/tags/%E6%BA%90%E7%A0%81/" style="font-size: 10px;">源码</a> <a href="/tags/%E7%AB%9E%E4%BA%89%E5%8A%9B/" style="font-size: 10px;">竞争力</a> <a href="/tags/%E7%AC%94%E8%AE%B0/" style="font-size: 10px;">笔记</a> <a href="/tags/%E8%AE%BE%E8%AE%A1/" style="font-size: 10px;">设计</a> <a href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" style="font-size: 20px;">读书笔记</a> <a href="/tags/%E9%93%B6%E8%A1%8C/" style="font-size: 10px;">银行</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/03/">March 2024</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2024/02/">February 2024</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2024/03/31/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-%E3%80%8ASpring%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95%E3%80%8B%EF%BC%88%E4%BA%8C%EF%BC%89AOP%E7%9A%84%E5%AE%9E%E7%8E%B0/">读书笔记-《Spring技术内幕》（二）AOP的实现</a>
+          </li>
+        
+          <li>
+            <a href="/2024/03/24/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-%E3%80%8A%E5%86%99%E7%BB%99%E5%A4%A7%E5%AE%B6%E7%9C%8B%E7%9A%84%E8%AE%BE%E8%AE%A1%E4%B9%A6%E3%80%8B/">读书笔记-《写给大家看的设计书》</a>
+          </li>
+        
+          <li>
+            <a href="/2024/03/16/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-%E3%80%8A%E5%BD%93%E4%B8%8B%E7%9A%84%E5%8A%9B%E9%87%8F%E3%80%8B/">读书笔记-《当下的力量》</a>
+          </li>
+        
+          <li>
+            <a href="/2024/03/10/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-%E3%80%8ASpring%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95%E3%80%8B%EF%BC%88%E4%B8%80%EF%BC%89IoC%E5%AE%B9%E5%99%A8%E7%9A%84%E5%AE%9E%E7%8E%B0/">读书笔记-《Spring技术内幕》（一）IoC容器的实现</a>
+          </li>
+        
+          <li>
+            <a href="/2024/03/09/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%82%AC%E6%94%B6%E4%B8%9A%E5%8A%A1/">学习笔记-催收业务</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2024 萝卜青今天也要开心<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.6.4.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>
