@@ -15,7 +15,7 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://lbqjtyykx.github.io/picture/2024/%E7%A8%8B%E5%BA%8F%E5%91%98%E5%B7%A5%E4%BD%9C%E4%B8%AD%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%EF%BC%8C%E4%BD%A0%E9%81%87%E5%88%B0%E8%BF%87%E5%87%A0%E4%B8%AA%EF%BC%9F/%E9%85%8D%E5%9B%BE-%E5%B8%A6%E6%B0%B4%E5%8D%B0.jpg">
 <meta property="article:published_time" content="2024-05-12T09:08:58.000Z">
-<meta property="article:modified_time" content="2024-05-12T09:20:49.343Z">
+<meta property="article:modified_time" content="2024-05-12T09:27:47.847Z">
 <meta property="article:author" content="萝卜青今天也要开心">
 <meta property="article:tag" content="程序员">
 <meta property="article:tag" content="工作">
@@ -129,6 +129,7 @@
 <h4 id="12-Tid"><a href="#12-Tid" class="headerlink" title="12.Tid"></a>12.Tid</h4><p>多线程下使用 Tid 要额外处理，避免所有线程共用一个 Tid 或 Tid 丢失的问题。</p>
 <h4 id="13-单元测试"><a href="#13-单元测试" class="headerlink" title="13.单元测试"></a>13.单元测试</h4><p>按规范写单元测试，不要过于随意，例如在 Controller 层写个接口来测试，可能引发安全问题。</p>
 <h4 id="14-影响范围"><a href="#14-影响范围" class="headerlink" title="14.影响范围"></a>14.影响范围</h4><p>哪怕是一行代码，也可能牵一发而动全身，仔细评估影响范围，并将改动点和测试交代清楚。<br>例如：改动一行代码，看似已经检查了所有使用者，结果由于其身处设计模式或 Spring Bean 中，还有其他间接使用者，就评估漏了影响范围。</p>
+<hr>
 <h3 id="二、CI-CD"><a href="#二、CI-CD" class="headerlink" title="二、CI &#x2F; CD"></a>二、CI &#x2F; CD</h3><h4 id="1-Maven"><a href="#1-Maven" class="headerlink" title="1.Maven"></a>1.Maven</h4><ul>
 <li><p>依赖问题<br>Maven采用最短最先声明优先原则，如果随意使用可能会依赖到我们不想要的版本，最好还是手动做依赖排除。</p>
 </li>
@@ -146,6 +147,7 @@
 <li>权限<br>如果应用需要操作文件，那么它启动参数的用户应该要有操作文件的权限。</li>
 </ul>
 <h4 id="4-灾备问题"><a href="#4-灾备问题" class="headerlink" title="4.灾备问题"></a>4.灾备问题</h4><p>服务对接时，如果一方是双活，一方是单活冷备，需要注意请求是否会走到冷备那边。<br>例如：某应用作为 MQ 生产者是双活部署，结果 MQ 消费者的应用是单活，那么自然而然其冷备所在环境的 MQ 就没法消费。</p>
+<hr>
 <h3 id="三、数据库"><a href="#三、数据库" class="headerlink" title="三、数据库"></a>三、数据库</h3><h4 id="1-迁库"><a href="#1-迁库" class="headerlink" title="1.迁库"></a>1.迁库</h4><ul>
 <li><p>通知下游<br>提前梳理好所有使用方，最好让 dba 看下流量来源，并将这些应用的数据源配置整改好，迁移时直接改数据源地址然后重启。<br>例如：评估漏了使用方，结果都迁移一周了对方反馈无增量数据才知道。。</p>
 </li>
@@ -156,6 +158,7 @@
 <p>评估影响范围<br>如果会造成锁表、增加主从同步时间等，需要评估对业务和其他读从库的系统的影响，确定好执行时间并通知相关方。</p>
 <h4 id="3-修数时"><a href="#3-修数时" class="headerlink" title="3.修数时"></a>3.修数时</h4><p>先验证<br>先修一笔的验证逻辑，确认无误再全量修。<br>例如：没有验证就全量修数，结果未达到预期并造成了更复杂的局面，花了更多的时间处理。</p>
 <p>执行顺序<br>注意 SQL 执行的先后顺序，以及对当前业务有哪些影响。<br>例如：先插入了待执行的任务，再修改的其他数据，结果任务插入后立刻被程序执行，但实际其他数据还未准备完毕，又花了更多的时间处理。</p>
+<hr>
 <h3 id="四、定时任务"><a href="#四、定时任务" class="headerlink" title="四、定时任务"></a>四、定时任务</h3><h4 id="1-路由策略"><a href="#1-路由策略" class="headerlink" title="1.路由策略"></a>1.路由策略</h4><p>把分片广播的配置成了单机，效率低下，当然反过来如果没有幂等也一样有问题。</p>
 <h4 id="2-阻塞处理策略"><a href="#2-阻塞处理策略" class="headerlink" title="2.阻塞处理策略"></a>2.阻塞处理策略</h4><p>单机串行可能重复执行，丢弃后续调度可能漏执行，要根据实际业务逻辑选择。</p>
 <h4 id="3-Cron-表达式"><a href="#3-Cron-表达式" class="headerlink" title="3.Cron 表达式"></a>3.Cron 表达式</h4><ul>
@@ -165,15 +168,19 @@
 </li>
 </ul>
 <h4 id="4-任务参数"><a href="#4-任务参数" class="headerlink" title="4.任务参数"></a>4.任务参数</h4><p>填写错误，例如数字类型填成了字符串类型。</p>
+<hr>
 <h3 id="五、配置文件"><a href="#五、配置文件" class="headerlink" title="五、配置文件"></a>五、配置文件</h3><h4 id="1-不要手敲"><a href="#1-不要手敲" class="headerlink" title="1.不要手敲"></a>1.不要手敲</h4><p>采用手敲而非复制，导致值不正确。<br>例如：经典 oO0D、2zZ、1Il。</p>
 <h4 id="2-确认发布"><a href="#2-确认发布" class="headerlink" title="2.确认发布"></a>2.确认发布</h4><p>未发布配置便投产应用，导致应用启动找不到配置。</p>
 <h4 id="3-确认值"><a href="#3-确认值" class="headerlink" title="3.确认值"></a>3.确认值</h4><p>线上直接使用测试环境的值（测试同学随便配的），开发没有去核实该配置，导致有问题。<br>最好是规范到产品接入表格里，让业务提供准入参数。</p>
 <h4 id="4-配置还原"><a href="#4-配置还原" class="headerlink" title="4.配置还原"></a>4.配置还原</h4><p>配置在临时调试、处理问题后，要还原本来正常的值。<br>例如：扣款时间在9点，由于9点至10点上游异常，临时改动到11点扣款，处理完成之后，忘记将时间改回去。</p>
+<hr>
 <h3 id="六、网络"><a href="#六、网络" class="headerlink" title="六、网络"></a>六、网络</h3><h4 id="1-确认网络"><a href="#1-确认网络" class="headerlink" title="1.确认网络"></a>1.确认网络</h4><p>确认网络策略开通后再发布应用，以免代码提前运行报错影响业务。</p>
 <h4 id="2-白名单"><a href="#2-白名单" class="headerlink" title="2.白名单"></a>2.白名单</h4><p>通常网络策略和白名单是配套的，注意找网络同学要最新的对外出口白名单。</p>
 <h4 id="3-安全访问"><a href="#3-安全访问" class="headerlink" title="3.安全访问"></a>3.安全访问</h4><p>HTTPS 访问 HTTP 会被浏览器拦截，导致无法访问。如果代码暂时整改不了可以写一个浏览器配置操作手册发给使用方。</p>
+<hr>
 <h3 id="七、文件"><a href="#七、文件" class="headerlink" title="七、文件"></a>七、文件</h3><h4 id="1-权限"><a href="#1-权限" class="headerlink" title="1.权限"></a>1.权限</h4><p>应用是否有处理文件的权限，有时得到的路径可能是相对路径，权限和路径也挂钩，需要注意。</p>
 <h4 id="2-区分"><a href="#2-区分" class="headerlink" title="2.区分"></a>2.区分</h4><p>文件要检查是否能通过文件夹或文件名来区分，否则可能只有一个文件在不断被覆盖。测试时可能只测一笔数据，不会测到。</p>
+<hr>
 <h3 id="八、上线验证"><a href="#八、上线验证" class="headerlink" title="八、上线验证"></a>八、上线验证</h3><h4 id="1-谨慎对待"><a href="#1-谨慎对待" class="headerlink" title="1.谨慎对待"></a>1.谨慎对待</h4><p>业务流程、日志、监控告警、数据库多层次验证，不要随便看下没问题就溜了。重大变更要有详细的上线步骤、验证步骤。</p>
 <hr>
 <p><img src="/../picture/2024/%E7%A8%8B%E5%BA%8F%E5%91%98%E5%B7%A5%E4%BD%9C%E4%B8%AD%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%EF%BC%8C%E4%BD%A0%E9%81%87%E5%88%B0%E8%BF%87%E5%87%A0%E4%B8%AA%EF%BC%9F/%E9%85%8D%E5%9B%BE-%E5%B8%A6%E6%B0%B4%E5%8D%B0.jpg" alt="配图"></p>
