@@ -19,7 +19,7 @@
 <meta property="og:image" content="https://lbqjtyykx.github.io/picture/2024/%E5%A6%82%E4%BD%95%E8%AE%BE%E8%AE%A1%E7%A6%BB%E7%BA%BF%E8%B7%91%E6%89%B9%E7%B3%BB%E7%BB%9F/PVZ-%E5%B8%A6%E6%B0%B4%E5%8D%B0.jpg">
 <meta property="og:image" content="https://lbqjtyykx.github.io/picture/2024/%E5%A6%82%E4%BD%95%E8%AE%BE%E8%AE%A1%E7%A6%BB%E7%BA%BF%E8%B7%91%E6%89%B9%E7%B3%BB%E7%BB%9F/KR.jpg">
 <meta property="article:published_time" content="2024-05-18T13:34:56.000Z">
-<meta property="article:modified_time" content="2024-05-18T13:48:50.438Z">
+<meta property="article:modified_time" content="2024-05-18T13:58:18.663Z">
 <meta property="article:author" content="萝卜青今天也要开心">
 <meta property="article:tag" content="方法论">
 <meta property="article:tag" content="设计">
@@ -131,11 +131,7 @@
 <li>数据库容量<br>根据业务情况预估数据量，该扩容就提前扩好容，防止磁盘空间不足。</li>
 </ul>
 <h4 id="2-性能"><a href="#2-性能" class="headerlink" title="2.性能"></a>2.性能</h4><ul>
-<li><p>异步</p>
-</li>
-<li><p>多线程：使用线程池且按业务维度进行划分，避免相互影响，同时要使用锁来避免并发问题。</p>
-</li>
-<li><p>MQ：注意发送失败、重复发送、消息过大等问题。</p>
+<li><p>异步<br>多线程：使用线程池且按业务维度进行划分，避免相互影响，同时要使用锁来避免并发问题。<br>MQ：注意发送失败、重复发送、消息过大等问题。</p>
 </li>
 <li><p>分片<br>某些场景下可自行实现分片，让程序或数据之间互相独立。</p>
 </li>
@@ -145,11 +141,7 @@
 <h4 id="3-流程"><a href="#3-流程" class="headerlink" title="3.流程"></a>3.流程</h4><ul>
 <li><p>容错与幂等<br>通过重试&#x2F;补偿机制应对各种异常情况，如程序 bug 、网络中断、中间件或依赖服务宕机。否则一旦出错，海量数据和执行流程将带来极高的运维成本。</p>
 </li>
-<li><p>闭环</p>
-</li>
-<li><p>数据状态机：状态扭转时一定要形成闭环，特别注意异常情况导致的中间状态挂起。</p>
-</li>
-<li><p>数据一致性：可以是基于事务的强一致，也可以是基于 MQ 的最终一致。</p>
+<li><p>闭环<br>数据状态机：状态扭转时一定要形成闭环，特别注意异常情况导致的中间状态挂起。<br>数据一致性：可以是基于事务的强一致，也可以是基于 MQ 的最终一致。</p>
 </li>
 <li><p>熔断与降级<br>与上面类似，针对各种异常情况，能够降低损失（不影响主要流程&#x2F;核心业务&#x2F;在线业务）的机制，例如业务开关、服务降级开关。</p>
 </li>
