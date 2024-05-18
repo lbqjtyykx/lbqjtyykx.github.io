@@ -19,7 +19,7 @@
 <meta property="og:image" content="https://lbqjtyykx.github.io/picture/2024/%E5%A6%82%E4%BD%95%E8%AE%BE%E8%AE%A1%E7%A6%BB%E7%BA%BF%E8%B7%91%E6%89%B9%E7%B3%BB%E7%BB%9F/PVZ-%E5%B8%A6%E6%B0%B4%E5%8D%B0.jpg">
 <meta property="og:image" content="https://lbqjtyykx.github.io/picture/2024/%E5%A6%82%E4%BD%95%E8%AE%BE%E8%AE%A1%E7%A6%BB%E7%BA%BF%E8%B7%91%E6%89%B9%E7%B3%BB%E7%BB%9F/KR.jpg">
 <meta property="article:published_time" content="2024-05-18T13:34:56.000Z">
-<meta property="article:modified_time" content="2024-05-18T13:58:18.663Z">
+<meta property="article:modified_time" content="2024-05-18T13:59:10.666Z">
 <meta property="article:author" content="萝卜青今天也要开心">
 <meta property="article:tag" content="方法论">
 <meta property="article:tag" content="设计">
@@ -147,11 +147,10 @@
 </li>
 </ul>
 <h4 id="4-可扩展性"><a href="#4-可扩展性" class="headerlink" title="4.可扩展性"></a>4.可扩展性</h4><p>根据业务做出前瞻性设计，例如数据来源现在是读文件，那么以后是否可能有读从库&#x2F;调接口的方式？<br>是否已满足单一职责原则、开闭原则？是否需要使用一些设计模式？</p>
-<h4 id="5-可维护性"><a href="#5-可维护性" class="headerlink" title="5.可维护性"></a>5.可维护性</h4><p>做好日志打印与监控告警，要反馈整体运行情况、关键错误信息，从而能够快速定位问题，减少运维成本。</p>
-<p>ok，现在我们已经熟悉离线跑批系统的设计要点了，来看个具体的案例吧。</p>
+<h4 id="5-可维护性"><a href="#5-可维护性" class="headerlink" title="5.可维护性"></a>5.可维护性</h4><p>做好日志打印与监控告警，要反馈整体运行情况、关键错误信息，从而能够快速定位问题，减少运维成本。<br>ok，现在我们已经熟悉离线跑批系统的设计要点了，来看个具体的案例吧。</p>
 <hr>
 <h3 id="三、案例"><a href="#三、案例" class="headerlink" title="三、案例"></a>三、案例</h3><p>某天，业务提了这样一个需求：</p>
-<p>“做一个系统，对某业务数据进行存储、计算及报表展示。某数据团队会通过文件提供基础数据，数据量大约三千万。”</p>
+<p><em>“做一个系统，对某业务数据进行存储、计算及报表展示。某数据团队会通过文件提供基础数据，数据量大约三千万。”</em></p>
 <p>此时，我们脑海中应该会浮现出以下问题：</p>
 <ul>
 <li>业务想要这个报表的原因是什么，或者说这个数据有什么价值？</li>
