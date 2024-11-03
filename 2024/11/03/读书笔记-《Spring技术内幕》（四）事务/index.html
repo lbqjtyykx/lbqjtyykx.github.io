@@ -18,7 +18,7 @@
 <meta property="og:image" content="https://lbqjtyykx.github.io/picture/2024/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-%E3%80%8ASpring%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95%E3%80%8B%EF%BC%88%E5%9B%9B%EF%BC%89%E4%BA%8B%E5%8A%A1/%E5%88%9B%E5%BB%BA%E4%BA%8B%E5%8A%A1%E6%97%B6%E5%BA%8F%E5%9B%BE-%E5%B8%A6%E6%B0%B4%E5%8D%B0.png">
 <meta property="og:image" content="https://lbqjtyykx.github.io/picture/2024/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-%E3%80%8ASpring%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95%E3%80%8B%EF%BC%88%E5%9B%9B%EF%BC%89%E4%BA%8B%E5%8A%A1/%E9%85%8D%E5%9B%BE-%E5%B8%A6%E6%B0%B4%E5%8D%B0.png">
 <meta property="article:published_time" content="2024-11-03T08:29:07.000Z">
-<meta property="article:modified_time" content="2024-11-03T08:40:22.843Z">
+<meta property="article:modified_time" content="2024-11-03T09:01:07.722Z">
 <meta property="article:author" content="萝卜青今天也要开心">
 <meta property="article:tag" content="读书笔记">
 <meta property="article:tag" content="Java">
@@ -110,13 +110,12 @@
 <span id="more"></span>
 
 <hr>
-<h3 id="一、Spring-事务概述"><a href="#一、Spring-事务概述" class="headerlink" title="一、Spring 事务概述"></a>一、Spring 事务概述</h3><p>按照惯例，我们先从程序员的视角出发，看看 Spring 帮我们做了什么，再学习其具体的设计与实现。</p>
-<p>在没有使用 Spring 的 JavaWeb 项目中，是怎么实现事务的呢？请看下面的示例代码：</p>
-<p><code>public void hello &#123;     Connection conn = openConnection();     try &#123;         conn.setAutoCommit(false);         // 业务代码         conn.commit();     &#125; catch (SQLException e) &#123;         conn.rollback();     &#125; finally &#123;         conn.setAutoCommit(true);         conn.close();     &#125; &#125;</code></p>
-<p>这个 Connection 我印象很深，初学时因为它学习到了第一个设计模式——单例模式，这个模式的懒汉&#x2F;饿汉实现、双重检测是早期常见的面试题。（跑题了，赶紧拉回来……）</p>
-<p>简单来说，这里的代码直接操作数据库连接，并且将事务处理代码和业务代码耦合，非常糟糕。</p>
-<p>而在 Spring 的帮助下，我们只需要一行注解，就很优雅。</p>
-<p><code>@Transactional public void world &#123;     // 业务代码 &#125;</code></p>
+<h3 id="一、Spring-事务概述"><a href="#一、Spring-事务概述" class="headerlink" title="一、Spring 事务概述"></a>一、Spring 事务概述</h3><p>按照惯例，我们先从程序员的视角出发，看看 Spring 帮我们做了什么，再学习其具体的设计与实现。<br>在没有使用 Spring 的 JavaWeb 项目中，是怎么实现事务的呢？请看下面的示例代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">public void hello &#123;</span><br><span class="line">    Connection conn = openConnection();</span><br><span class="line">    try &#123;</span><br><span class="line">        conn.setAutoCommit(false);</span><br><span class="line">        // 业务代码</span><br><span class="line">        conn.commit();</span><br><span class="line">    &#125; catch (SQLException e) &#123;</span><br><span class="line">        conn.rollback();</span><br><span class="line">    &#125; finally &#123;</span><br><span class="line">        conn.setAutoCommit(true);</span><br><span class="line">        conn.close();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这个 Connection 我印象很深，初学时因为它学习到了第一个设计模式——单例模式，这个模式的懒汉&#x2F;饿汉实现、双重检测是早期常见的面试题。（跑题了，赶紧拉回来……）<br>简单来说，这里的代码直接操作数据库连接，并且将事务处理代码和业务代码耦合，非常糟糕。<br>而在 Spring 的帮助下，我们只需要一行注解，就很优雅。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">@Transactional</span><br><span class="line">public void world &#123;</span><br><span class="line">    // 业务代码</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>看到这种将非业务功能代码解耦出来，并通过注解（声明式）实现功能的操作，很容易猜到，其原理是通过 AOP 将事务处理的功能编织进来，本质上可以看作是一个<strong>基于 Spring IoC、AOP 的优秀应用。</strong>（<font color ="red">注意：后面默认指代的是声明式使用，</font>Spring 事务也可以编程式使用，其实现非常简单，不涉及框架特性，但是会耦合业务代码，本文不做讲述）</p>
 <p>既然如此，从流程上看 Spring 事务的实现就有<strong>两个重点</strong>：</p>
 <ul>
@@ -142,16 +141,13 @@
 <li>在构建好代理对象后，调用代理方法时便会调用相应的 TransactionInterceptor，匹配对应的配置。（举个例子的话可以看看 NameMatchTransactionAttributeSource，其通过成员变量 nameMap 的维护来实现名称匹配）</li>
 </ul>
 <hr>
-<h3 id="四、处理事务"><a href="#四、处理事务" class="headerlink" title="四、处理事务"></a>四、处理事务</h3><p>构建好代理对象后，对原方法的调用就会被拦截，也就是进入 TransactionInterceptor 的 invoke()。其会依次获取事务处理配置、PlatformTransactionManager，并交由这个具体的处理器来实现事务的创建、提交、回滚等等。</p>
-<p>这里我们就以事务的创建为例，看看 TransactionAspectSupport 的 createTransactionIfNecessary 方法的时序图。</p>
+<h3 id="四、处理事务"><a href="#四、处理事务" class="headerlink" title="四、处理事务"></a>四、处理事务</h3><p>构建好代理对象后，对原方法的调用就会被拦截，也就是进入 TransactionInterceptor 的 invoke()。其会依次获取事务处理配置、PlatformTransactionManager，并交由这个具体的处理器来实现事务的创建、提交、回滚等等。<br>这里我们就以事务的创建为例，看看 TransactionAspectSupport 的 createTransactionIfNecessary 方法的时序图。</p>
 <p><img src="/../picture/2024/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-%E3%80%8ASpring%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95%E3%80%8B%EF%BC%88%E5%9B%9B%EF%BC%89%E4%BA%8B%E5%8A%A1/%E5%88%9B%E5%BB%BA%E4%BA%8B%E5%8A%A1%E6%97%B6%E5%BA%8F%E5%9B%BE-%E5%B8%A6%E6%B0%B4%E5%8D%B0.png" alt="配图"><br>这里就两点可以留意下：</p>
 <ul>
 <li>针对不同的事务传播机制，源码里有各种条件分支。（不过在实际工作中，我还没使用过非默认的传播机制，一般是通过 MQ 来保障最终一致性）</li>
 <li>bindToThread() 是通过 TransactionAspectSupport 的成员变量 ThreadLocal<TransactionInfo> transactionInfoHolder 实现，其也体现了事务的隔离性。</li>
 </ul>
-<p>至此，我们只需再进一步就可抵达终点了。</p>
-<p>前面的类层次结构图有提到 AbstractPlatformTransactionManager，其定义了事务的生成、提交、回滚、挂起，对于不同的数据库有不同的实现。</p>
-<p>以 DataSourceTransactionManager 为例，点开它的源码一看，我们就会发现非常眼熟。它就和一开始我们写的示例代码类似，直接操作 Connection，打印日志等等。</p>
+<p>至此，我们只需再进一步就可抵达终点了。<br>前面的类层次结构图有提到 AbstractPlatformTransactionManager，其定义了事务的生成、提交、回滚、挂起，对于不同的数据库有不同的实现。<br>以 DataSourceTransactionManager 为例，点开它的源码一看，我们就会发现非常眼熟。它就和一开始我们写的示例代码类似，直接操作 Connection，打印日志等等。</p>
 <hr>
 <p><img src="/../picture/2024/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-%E3%80%8ASpring%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95%E3%80%8B%EF%BC%88%E5%9B%9B%EF%BC%89%E4%BA%8B%E5%8A%A1/%E9%85%8D%E5%9B%BE-%E5%B8%A6%E6%B0%B4%E5%8D%B0.png" alt="配图"></p>
 <p><strong>原文链接：</strong><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=Mzk0NDY1MTIwMg==&mid=2247483861&idx=1&sn=a9570c976eb53a91e4eb141da459004b&chksm=c3202f78f457a66e06191ddc36c007642456db8e3b7e66108180fdbf91a5c1dc5e17ca055879#rd">读书笔记-《Spring技术内幕》（四）事务</a><br><strong>原创不易，点个关注不迷路哟，谢谢！</strong><br><strong>文章推荐：</strong></p>
