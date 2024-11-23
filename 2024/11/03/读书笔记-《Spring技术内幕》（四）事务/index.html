@@ -6,19 +6,19 @@
   
   <title>读书笔记-《Spring技术内幕》（四）事务 | 萝卜青今天也要开心，公众号同名，点个关注不迷路~</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="前面我们依次学习了 IoC、AOP、MVC（读书笔记-《Spring技术内幕》（一）IoC容器的实现、读书笔记-《Spring技术内幕》（二）AOP的实现、读书笔记-《Spring技术内幕》（三）MVC与Web环境），已经涵盖了 Spring 最核心的内容。 今天，我们再来研究一个比较常用的组件——事务，然后这本书的读书笔记就可以完结了~">
+  <meta name="description" content="前面我们依次学习了 IoC、AOP、MVC（读书笔记-《Spring技术内幕》（一）IoC容器的实现、读书笔记-《Spring技术内幕》（二）AOP的实现、读书笔记-《Spring技术内幕》（三）MVC与Web环境），已经涵盖了 Spring 最核心的内容。 今天，我们再来研究一个比较常用的组件——事务，然后这本书的读书笔记就可以完结了~ ~">
 <meta property="og:type" content="article">
 <meta property="og:title" content="读书笔记-《Spring技术内幕》（四）事务">
 <meta property="og:url" content="https://lbqjtyykx.github.io/2024/11/03/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-%E3%80%8ASpring%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95%E3%80%8B%EF%BC%88%E5%9B%9B%EF%BC%89%E4%BA%8B%E5%8A%A1/index.html">
 <meta property="og:site_name" content="萝卜青今天也要开心，公众号同名，点个关注不迷路~">
-<meta property="og:description" content="前面我们依次学习了 IoC、AOP、MVC（读书笔记-《Spring技术内幕》（一）IoC容器的实现、读书笔记-《Spring技术内幕》（二）AOP的实现、读书笔记-《Spring技术内幕》（三）MVC与Web环境），已经涵盖了 Spring 最核心的内容。 今天，我们再来研究一个比较常用的组件——事务，然后这本书的读书笔记就可以完结了~">
+<meta property="og:description" content="前面我们依次学习了 IoC、AOP、MVC（读书笔记-《Spring技术内幕》（一）IoC容器的实现、读书笔记-《Spring技术内幕》（二）AOP的实现、读书笔记-《Spring技术内幕》（三）MVC与Web环境），已经涵盖了 Spring 最核心的内容。 今天，我们再来研究一个比较常用的组件——事务，然后这本书的读书笔记就可以完结了~ ~">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://lbqjtyykx.github.io/picture/2024/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-%E3%80%8ASpring%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95%E3%80%8B%EF%BC%88%E5%9B%9B%EF%BC%89%E4%BA%8B%E5%8A%A1/%E7%B1%BB%E7%BB%93%E6%9E%84%E5%9B%BE-%E5%B8%A6%E6%B0%B4%E5%8D%B0.png">
 <meta property="og:image" content="https://lbqjtyykx.github.io/picture/2024/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-%E3%80%8ASpring%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95%E3%80%8B%EF%BC%88%E5%9B%9B%EF%BC%89%E4%BA%8B%E5%8A%A1/%E6%9E%84%E5%BB%BA%E4%BA%8B%E5%8A%A1%E5%A4%84%E7%90%86%E5%AF%B9%E8%B1%A1%E6%97%B6%E5%BA%8F%E5%9B%BE-%E5%B8%A6%E6%B0%B4%E5%8D%B0.png">
 <meta property="og:image" content="https://lbqjtyykx.github.io/picture/2024/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-%E3%80%8ASpring%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95%E3%80%8B%EF%BC%88%E5%9B%9B%EF%BC%89%E4%BA%8B%E5%8A%A1/%E5%88%9B%E5%BB%BA%E4%BA%8B%E5%8A%A1%E6%97%B6%E5%BA%8F%E5%9B%BE-%E5%B8%A6%E6%B0%B4%E5%8D%B0.png">
 <meta property="og:image" content="https://lbqjtyykx.github.io/picture/2024/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-%E3%80%8ASpring%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95%E3%80%8B%EF%BC%88%E5%9B%9B%EF%BC%89%E4%BA%8B%E5%8A%A1/%E9%85%8D%E5%9B%BE-%E5%B8%A6%E6%B0%B4%E5%8D%B0.png">
 <meta property="article:published_time" content="2024-11-03T08:29:07.000Z">
-<meta property="article:modified_time" content="2024-11-03T09:01:07.722Z">
+<meta property="article:modified_time" content="2024-11-23T07:29:20.164Z">
 <meta property="article:author" content="萝卜青今天也要开心">
 <meta property="article:tag" content="读书笔记">
 <meta property="article:tag" content="Java">
@@ -106,7 +106,7 @@
     <div class="e-content article-entry" itemprop="articleBody">
       
         <p>前面我们依次学习了 IoC、AOP、MVC（<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=Mzk0NDY1MTIwMg==&mid=2247483714&idx=1&sn=80427e3c6180e2f6807c7e73d2209e44&chksm=c3202feff457a6f9bd9a570ad364ca2e7e2926cd70ce6bb641d62ffae4efda5479e527a170da#rd">读书笔记-《Spring技术内幕》（一）IoC容器的实现</a>、<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=Mzk0NDY1MTIwMg==&mid=2247483752&idx=1&sn=ca92ada4252a8ed39fa86a43eb786d7a&chksm=c3202fc5f457a6d33e1b3832a1afdef42c760ff54af48d21b7206cc1c1766ade88c3a360a2a5#rd">读书笔记-《Spring技术内幕》（二）AOP的实现</a>、<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=Mzk0NDY1MTIwMg==&mid=2247483821&idx=1&sn=fd4dada1b99adb51b3dea5d1a3fef348&chksm=c3202f00f457a61693154c67a6150d3ee5d6ab91e2a3609c755d37b5f33bb6c9b05f2d16d217#rd">读书笔记-《Spring技术内幕》（三）MVC与Web环境</a>），已经涵盖了 Spring 最核心的内容。</p>
-<p>今天，我们再来研究一个比较常用的组件——事务，然后这本书的读书笔记就可以完结了~</p>
+<p>今天，我们再来研究一个比较常用的组件——事务，然后这本书的读书笔记就可以完结了~ ~</p>
 <span id="more"></span>
 
 <hr>
