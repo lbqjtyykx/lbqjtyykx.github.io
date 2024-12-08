@@ -13,15 +13,15 @@
 <meta property="og:site_name" content="萝卜青今天也要开心，公众号同名，点个关注不迷路~">
 <meta property="og:description" content="翻开这本书，又一次体会到技术迭代更新之快。 这本书是基于 Redis 3.0 开发版编写的，截至本文编写时，Redis Software 版本已经来到了 7.8.2。经过多次迭代，Redis 底层已发生不少变化，因此，我们在学习本书时，重点放在设计思想上，而非实现层面的细枝末节。">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://lbqjtyykx.github.io/picture/2024/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-%E3%80%8ARedis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E3%80%8B%EF%BC%88%E4%B8%80%EF%BC%89%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E5%AF%B9%E8%B1%A1%EF%BC%88%E4%B8%8A%EF%BC%89/%E9%85%8D%E5%9B%BE-%E5%B8%A6%E6%B0%B4%E5%8D%B0.png">
+<meta property="og:image" content="https://lbqjtyykx.github.io/picture/2024/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-%E3%80%8ARedis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E3%80%8B%EF%BC%88%E4%B8%80%EF%BC%89%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E5%AF%B9%E8%B1%A1%EF%BC%88%E4%B8%8A%EF%BC%89/%E9%85%8D%E5%9B%BE-%E5%B8%A6%E6%B0%B4%E5%8D%B0.jpg">
 <meta property="article:published_time" content="2024-12-08T03:16:07.000Z">
-<meta property="article:modified_time" content="2024-12-08T03:23:52.818Z">
+<meta property="article:modified_time" content="2024-12-08T04:08:11.308Z">
 <meta property="article:author" content="萝卜青今天也要开心">
 <meta property="article:tag" content="读书笔记">
 <meta property="article:tag" content="Java">
 <meta property="article:tag" content="Redis">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://lbqjtyykx.github.io/picture/2024/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-%E3%80%8ARedis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E3%80%8B%EF%BC%88%E4%B8%80%EF%BC%89%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E5%AF%B9%E8%B1%A1%EF%BC%88%E4%B8%8A%EF%BC%89/%E9%85%8D%E5%9B%BE-%E5%B8%A6%E6%B0%B4%E5%8D%B0.png">
+<meta name="twitter:image" content="https://lbqjtyykx.github.io/picture/2024/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-%E3%80%8ARedis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E3%80%8B%EF%BC%88%E4%B8%80%EF%BC%89%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E5%AF%B9%E8%B1%A1%EF%BC%88%E4%B8%8A%EF%BC%89/%E9%85%8D%E5%9B%BE-%E5%B8%A6%E6%B0%B4%E5%8D%B0.jpg">
   
     <link rel="alternate" href="/atom.xml" title="萝卜青今天也要开心，公众号同名，点个关注不迷路~" type="application/atom+xml">
   
@@ -139,7 +139,7 @@
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">// 依次为头尾节点、节点数量、最高层的层数</span><br><span class="line">typedef struct zskiplist &#123;</span><br><span class="line">    structz skiplistNode *header, *tail;</span><br><span class="line">    unsigned long length;</span><br><span class="line">    int level;</span><br><span class="line">&#125; zskiplist;</span><br><span class="line"></span><br><span class="line">// 依次为后退指针、分值、成员对象、层</span><br><span class="line">typedef struct zskiplistNode &#123;</span><br><span class="line">    struct zskiplistNode *backward; </span><br><span class="line">    double score;</span><br><span class="line">    robj *obj;</span><br><span class="line">    struct zskiplistLevel &#123; </span><br><span class="line">        struct zskiplistNode *forward;</span><br><span class="line">        unsigned int span;</span><br><span class="line">    &#125; level[];</span><br><span class="line">&#125; zskiplistNode;</span><br></pre></td></tr></table></figure>
 
 <hr>
-<p><img src="/../picture/2024/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-%E3%80%8ARedis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E3%80%8B%EF%BC%88%E4%B8%80%EF%BC%89%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E5%AF%B9%E8%B1%A1%EF%BC%88%E4%B8%8A%EF%BC%89/%E9%85%8D%E5%9B%BE-%E5%B8%A6%E6%B0%B4%E5%8D%B0.png" alt="配图"></p>
+<p><img src="/../picture/2024/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-%E3%80%8ARedis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E3%80%8B%EF%BC%88%E4%B8%80%EF%BC%89%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E5%AF%B9%E8%B1%A1%EF%BC%88%E4%B8%8A%EF%BC%89/%E9%85%8D%E5%9B%BE-%E5%B8%A6%E6%B0%B4%E5%8D%B0.jpg" alt="配图"></p>
 <p><strong>原文链接：</strong><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/T15FikJn1BFvTsBeM0_m7g">读书笔记-《Redis设计与实现》（一）数据结构与对象（上）</a><br><strong>原创不易，点个关注不迷路哟，谢谢~</strong><br><strong>文章推荐：</strong></p>
 <ul>
 <li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=Mzk0NDY1MTIwMg==&mid=2247483693&idx=1&sn=c0ac6f3f08dcbebfbe6b2d947536b210&chksm=c3202f80f457a6967bf321538f291e3b897bb1ee02bbbfb397abc1b40abb3799071bc0dbe2c9#rd">如何提高核心竞争力</a></li>
