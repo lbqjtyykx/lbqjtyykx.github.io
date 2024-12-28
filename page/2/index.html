@@ -73,6 +73,51 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-读书笔记-《Spring技术内幕》（三）MVC与Web环境" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2024/06/30/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-%E3%80%8ASpring%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95%E3%80%8B%EF%BC%88%E4%B8%89%EF%BC%89MVC%E4%B8%8EWeb%E7%8E%AF%E5%A2%83/" class="article-date">
+  <time class="dt-published" datetime="2024-06-30T08:58:27.000Z" itemprop="datePublished">2024-06-30</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2024/06/30/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-%E3%80%8ASpring%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95%E3%80%8B%EF%BC%88%E4%B8%89%EF%BC%89MVC%E4%B8%8EWeb%E7%8E%AF%E5%A2%83/">读书笔记-《Spring技术内幕》（三）MVC与Web环境</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>前面我们学习了 Spring 最核心的 IoC 与 AOP 模块（<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=Mzk0NDY1MTIwMg==&mid=2247483714&idx=1&sn=80427e3c6180e2f6807c7e73d2209e44&chksm=c3202feff457a6f9bd9a570ad364ca2e7e2926cd70ce6bb641d62ffae4efda5479e527a170da#rd">读书笔记-《Spring技术内幕》（一）IoC容器的实现</a>、<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=Mzk0NDY1MTIwMg==&mid=2247483752&idx=1&sn=ca92ada4252a8ed39fa86a43eb786d7a&chksm=c3202fc5f457a6d33e1b3832a1afdef42c760ff54af48d21b7206cc1c1766ade88c3a360a2a5#rd">读书笔记-《Spring技术内幕》（二）AOP的实现</a>），接下来继续学习 MVC，其同样也是经典。<br>我们依旧按照<strong>从浅到深</strong>的方式来学习，先从程序员的视角看看其简化了哪些工作，帮我们做了什么，再到具体的设计与实现。</p>
+        
+          <p class="article-more-link">
+            <a href="/2024/06/30/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-%E3%80%8ASpring%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95%E3%80%8B%EF%BC%88%E4%B8%89%EF%BC%89MVC%E4%B8%8EWeb%E7%8E%AF%E5%A2%83/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="https://lbqjtyykx.github.io/2024/06/30/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-%E3%80%8ASpring%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95%E3%80%8B%EF%BC%88%E4%B8%89%EF%BC%89MVC%E4%B8%8EWeb%E7%8E%AF%E5%A2%83/" data-id="cly1bz54e0000h0rgeskdbk6v" data-title="读书笔记-《Spring技术内幕》（三）MVC与Web环境" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Spring/" rel="tag">Spring</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li></ul>
+
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
     <article id="post-读书笔记-《人人都是产品经理》" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
     <a href="/2024/06/18/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-%E3%80%8A%E4%BA%BA%E4%BA%BA%E9%83%BD%E6%98%AF%E4%BA%A7%E5%93%81%E7%BB%8F%E7%90%86%E3%80%8B/" class="article-date">
@@ -480,52 +525,6 @@
 
 
   
-    <article id="post-读书笔记-《Spring技术内幕》（一）IoC容器的实现" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2024/03/10/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-%E3%80%8ASpring%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95%E3%80%8B%EF%BC%88%E4%B8%80%EF%BC%89IoC%E5%AE%B9%E5%99%A8%E7%9A%84%E5%AE%9E%E7%8E%B0/" class="article-date">
-  <time class="dt-published" datetime="2024-03-10T10:29:22.000Z" itemprop="datePublished">2024-03-10</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="p-name article-title" href="/2024/03/10/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-%E3%80%8ASpring%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95%E3%80%8B%EF%BC%88%E4%B8%80%EF%BC%89IoC%E5%AE%B9%E5%99%A8%E7%9A%84%E5%AE%9E%E7%8E%B0/">读书笔记-《Spring技术内幕》（一）IoC容器的实现</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <p>如今已是2024年，掌握 Spring 早已是 Java 从业人员的基本要求。</p>
-<p>Spring 帮我们屏蔽掉了许多繁琐的工作，使我们可以把重心放在业务逻辑上。但也因此，要深刻体会到 Spring 带来的便捷性，反倒需要与没有使用 Spring 时作对比。为此，我特地翻了下上大学时用 JaveWeb 开发的项目（无框架），希望能让大家更好理解。</p>
-        
-          <p class="article-more-link">
-            <a href="/2024/03/10/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-%E3%80%8ASpring%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95%E3%80%8B%EF%BC%88%E4%B8%80%EF%BC%89IoC%E5%AE%B9%E5%99%A8%E7%9A%84%E5%AE%9E%E7%8E%B0/#more">Read More</a>
-          </p>
-        
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="https://lbqjtyykx.github.io/2024/03/10/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-%E3%80%8ASpring%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95%E3%80%8B%EF%BC%88%E4%B8%80%EF%BC%89IoC%E5%AE%B9%E5%99%A8%E7%9A%84%E5%AE%9E%E7%8E%B0/" data-id="cltledec10000psrg15zx05hf" data-title="读书笔记-《Spring技术内幕》（一）IoC容器的实现" class="article-share-link"><span class="fa fa-share">Share</span></a>
-      
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Spring/" rel="tag">Spring</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%BA%90%E7%A0%81/" rel="tag">源码</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" rel="tag">读书笔记</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
 
 
   <nav id="page-nav">
@@ -576,6 +575,10 @@
       <ul>
         
           <li>
+            <a href="/2024/12/28/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-%E3%80%8A%E4%B9%A1%E4%B8%8B%E4%BA%BA%E7%9A%84%E6%82%B2%E6%AD%8C%E3%80%8B/">读书笔记-《乡下人的悲歌》</a>
+          </li>
+        
+          <li>
             <a href="/2024/12/08/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-%E3%80%8ARedis%E8%AE%BE%E8%AE%A1%E4%B8%8E%E5%AE%9E%E7%8E%B0%E3%80%8B%EF%BC%88%E4%B8%80%EF%BC%89%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E5%AF%B9%E8%B1%A1%EF%BC%88%E4%B8%8A%EF%BC%89/">读书笔记-《Redis设计与实现》（一）数据结构与对象（上）</a>
           </li>
         
@@ -589,10 +592,6 @@
         
           <li>
             <a href="/2024/11/03/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-%E3%80%8ASpring%E6%8A%80%E6%9C%AF%E5%86%85%E5%B9%95%E3%80%8B%EF%BC%88%E5%9B%9B%EF%BC%89%E4%BA%8B%E5%8A%A1/">读书笔记-《Spring技术内幕》（四）事务</a>
-          </li>
-        
-          <li>
-            <a href="/2024/10/20/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-%E3%80%8A%E6%9C%80%E5%A5%BD%E7%9A%84%E5%91%8A%E5%88%AB%E3%80%8B/">读书笔记-《最好的告别》</a>
           </li>
         
       </ul>
